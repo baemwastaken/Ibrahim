@@ -1,0 +1,34 @@
+import socket
+
+def convert_to_atmosphere(pressure_bar):
+    return pressure_bar * 0.986923
+
+def main():
+    server_ip = "192.168.30.130"
+    server_port = 8844
+
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((server_ip, server_port))
+    server_socket.listen(1)
+
+    print("Server is ready and listening...")
+
+    while True:
+        connection, client_address = server_socket.accept()
+        print(f"Connection established with {client_address}")
+
+        try:
+            data = connection.recv(1024)
+            if not data:
+                break
+
+            pressure_bar = float(data.decode())
+            atmosphere_standard = convert_to_atmosphere(pressure_bar)
+            connection.send(str(atmosphere_standard).encode())
+        except ValueError:
+            connection.send(b"Invalid pressure value. Please send a valid number.")
+        finally:
+            connection.close()
+
+if __name__ == "__main__":
+    main()
