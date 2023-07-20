@@ -1,0 +1,22 @@
+import socket
+
+def main():
+    server_ip = "192.168.30.130"
+    server_port = 8844
+
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((server_ip, server_port))
+
+    try:
+        pressure_bar = float(input("Enter pressure in bar: "))
+        client_socket.send(str(pressure_bar).encode())
+
+        atmosphere_standard = client_socket.recv(1024).decode()
+        print(f"Pressure in atmosphere-standard: {atmosphere_standard} atm")
+    except ValueError:
+        print("Invalid input. Please enter a valid number.")
+    finally:
+        client_socket.close()
+
+if __name__ == "__main__":
+    main()
